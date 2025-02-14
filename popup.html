@@ -3,11 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Server Connection</title>
+  <title>Terms and Conditions Summary</title>
+  <style>
+    body {
+      width: 400px;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    
+    .container {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    .header {
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+    
+    .status {
+      color: #666;
+      margin-bottom: 15px;
+    }
+    
+    .summary-point {
+      background: #f8f9fa;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 4px;
+      border-left: 3px solid #007bff;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    .error {
+      color: #dc3545;
+      padding: 10px;
+      background: #f8d7da;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    
+    .btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    
+    .btn:hover {
+      background: #0056b3;
+    }
+  </style>
 </head>
 <body>
-  <h3>Testing Server Connection</h3>
-  <div id="status">Connecting to the server...</div>
-  <script src="popup.js"></script>
-</body>
-</html>
+  <div class="container">
+    <div class="header">
+      <h2>Terms & Conditions Summary</h2>
+    </div>
+    <div id="status" class="status">Analyzing page...</div>
+    <div id="summary-container"></div>
