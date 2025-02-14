@@ -10,31 +10,84 @@ async function getSummary(url) {
 
     if (response.ok) {
       const data = await response.json();
-      console.log("Received response:", data);
       return data;
     } else {
-      console.error('Failed to get response from server');
-      return null;
+      throw new Error('Failed to get response from server');
     }
   } catch (error) {
     console.error('Error in fetching data:', error);
-    return null;
+    throw error;
   }
 }
 
-async function sendUrlToServer() {
-  chrome.tabs.query({ active: true, currentWindow: true }, async function(tabs) {
-    const currentUrl = tabs[0].url;
-    console.log('Current URL:', currentUrl);
-
-    const response = await getSummary(currentUrl);
-
-    if (response) {
-      console.log("Server response:", response);
-    } else {
-      console.log("Failed to fetch data from server.");
-    }
+function displaySummary(summaryPoints) {
+  const container = document.getElementById('summary-container');
+  const status = document.getElementById('status');
+  const copyBtn = document.getElementById('copyBtn');
+  
+  // Clear previous content
+  container.innerHTML = '';
+  
+  // Display each summary point
+  summaryPoints.forEach((point, index) => {
+    const pointElement = document.createElement('div');
+    pointElement.className = 'summary-point';
+    pointElement.textContent = `${index + 1}. ${point}`;
+    container.appendChild(pointElement);
   });
+  
+  // Update status and show copy button
+  status.textContent = 'Summary generated successfully!';
+  copyBtn.style.display = 'block';
 }
 
-sendUrlToServer();
+function displayError(message) {
+  const container = document.getElementById('summary-container');
+  const status = document.getElementById('status');
+  
+  status.textContent = 'Error occurred';
+  
+  const errorElement = document.createElement('div');
+  errorElement.className = 'error';
+  errorElement.textContent = message;
+  container.appendChild(errorElement);
+}
+
+async function sendUrlToServer() {
+  const status = document.getElementById('status');
+  
+  try {
+    // Get current tab URL
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    const currentUrl = tabs[0].url;
+    
+    status.textContent = 'Analyzing terms and conditions...';
+    
+    const response = await getSummary(currentUrl);
+    if (response && response.summary) {
+      // Use the summary array directly
+      displaySummary(response.summary);
+    }
+  } catch (error) {
+    displayError(error.message);
+  }
+}
+
+// Add copy functionality
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const summaryText = Array.from(document.querySelectorAll('.summary-point'))
+    .map(el => el.textContent)
+    .join('\n\n');
+  
+  navigator.clipboard.writeText(summaryText)
+    .then(() => {
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy Summary';
+      }, 2000);
+    });
+});
+
+// Initialize when popup opens
+document.addEventListener('DOMContentLoaded', sendUrlToServer);
